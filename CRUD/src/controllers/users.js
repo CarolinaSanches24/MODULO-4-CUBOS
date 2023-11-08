@@ -32,17 +32,51 @@ const obterRegistro = async (req, res) => {
       .select("id", "nome", "email")
       .where({ id })
       .first();
-    if (!usuario) {
-      return res.status(404).json({ mensagem: "Usuário não encontrado" });
-    }
-    return res.status(201).json(usuario);
+
+    return res.status(200).json(usuario);
   } catch (error) {
+    console.log(error.message);
     return res.status(500).json({ mensagem: "Erro interno do Servidor!" });
   }
 };
 
+const atualizarUsuario = async (req, res) => {
+  const { nome, email, senha } = req.body;
+
+  const hashSenha = await bcrypt.hash(senha, 10);
+  const { id } = req.params;
+  try {
+    const usuario = await knex("usuarios")
+      .update({
+        nome,
+        email,
+        senha: hashSenha,
+      })
+      .where({ id });
+
+    return res.status(200).json({ mensagem: "Usuario atualizado com sucesso" });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ mensagem: "Erro interno do Servidor!" });
+  }
+};
+
+const excluir = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const usuario = await knex("usuarios").del().where({ id });
+
+    return res.status(200).json("Usuário excluido com sucesso");
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ mensagem: "Erro interno do Servidor!" });
+  }
+};
 module.exports = {
   listarUsuarios,
   cadastrarUsuario,
   obterRegistro,
+  atualizarUsuario,
+  excluir,
 };
