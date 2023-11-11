@@ -2,6 +2,7 @@ const express = require("express");
 const usuarios = require("../controllers/users");
 const login = require("../controllers/login");
 const verifyLogin = require("../middlewares/verifyLogin");
+const postagens = require("../controllers/postagens");
 
 const routes = express();
 
@@ -15,6 +16,10 @@ routes.use(verifyLogin);
 routes.get("/profile", usuarios.search);
 routes.put("/profile", usuarios.updateProfile);
 
-//postagens
+//rotas de postagens
+routes.post("/registerPost", postagens.newPost);
+routes.post("/likePost/:postId", postagens.curtir);
+routes.post("/commentPost/:postId", postagens.comentar);
+routes.get("/postagens/feed", postagens.feed);
 
 module.exports = routes;
